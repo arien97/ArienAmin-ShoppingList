@@ -5,13 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -32,10 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.hw3shoppinglist.ui.theme.HW3ShoppingListTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,13 +48,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("RememberReturnType")
 @Composable
 fun ShoppingList() {
-    val items = remember { mutableStateListOf<Pair<String, Boolean>>() }
+    val items = remember { mutableStateListOf<Triple<String, Boolean, String>>() }
     var newItemText by remember { mutableStateOf("") }
+    var newItemQuantity by remember { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize().padding(16.dp),
         contentAlignment = Alignment.TopCenter) {
@@ -63,6 +65,19 @@ fun ShoppingList() {
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             ))
+
+        // this was to make the result into two columns
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 60.dp)
+//                .border(1.dp, Color(0xFFbd300d)),
+//            horizontalArrangement = Arrangement.SpaceAround,
+//        ) {
+//            Text(text = "Item Name")
+//            Text(text = "Quantity")
+//        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,6 +100,23 @@ fun ShoppingList() {
                         }
                     )
                     Text(text = item.first, modifier = Modifier.padding(start = 8.dp))
+                    TextField(
+                        value = item.third,
+                        onValueChange = { newQuantity ->
+                            val index = items.indexOf(item)
+                            items[index] = item.copy(third = newQuantity)
+                        },
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .width(80.dp),
+                        singleLine = true,
+                        colors = TextFieldDefaults.textFieldColors(
+                            cursorColor = Color(0xFFbd300d),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            containerColor = Color(0xFFfcccc0)
+                        )
+                    )
                 }
             }
         }
@@ -110,11 +142,25 @@ fun ShoppingList() {
                     containerColor = Color(0xFFfcccc0)
                 )
             )
+            TextField(
+                value = newItemQuantity,
+                onValueChange = { newItemQuantity = it },
+                label = { Text("Quantity", color = Color(0xFFbd300d)) },
+                modifier = Modifier.width(100.dp),
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = Color(0xFFbd300d),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    containerColor = Color(0xFFfcccc0)
+                )
+            )
             Button(
                 onClick = {
-                    if (newItemText.isNotBlank()) {
-                        items.add(Pair(newItemText, false))
+                    if (newItemText.isNotBlank() && newItemQuantity.isNotBlank()) {
+                        items.add(Triple(newItemText, false, newItemQuantity))
                         newItemText = ""
+                        newItemQuantity = ""
                     }
                 },
                 modifier = Modifier.padding(start = 8.dp),
@@ -125,7 +171,6 @@ fun ShoppingList() {
         }
     }
 }
-
 
 
 
