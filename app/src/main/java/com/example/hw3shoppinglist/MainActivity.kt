@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,17 +67,16 @@ fun ShoppingList() {
                 fontWeight = FontWeight.Bold
             ))
 
-        // this was to make the result into two columns
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 60.dp)
-//                .border(1.dp, Color(0xFFbd300d)),
-//            horizontalArrangement = Arrangement.SpaceAround,
-//        ) {
-//            Text(text = "Item Name")
-//            Text(text = "Quantity")
-//        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp)
+                .border(1.dp, Color(0xFFbd300d)),
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            Text(text = "Item Name")
+            Text(text = "Quantity")
+        }
 
         LazyColumn(
             modifier = Modifier
@@ -97,9 +97,29 @@ fun ShoppingList() {
                         onCheckedChange = { isChecked ->
                             val index = items.indexOf(item)
                             items[index] = item.copy(second = isChecked)
-                        }
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = Color(0xFFbd300d),
+                            uncheckedColor = Color.Black
+                        )
                     )
-                    Text(text = item.first, modifier = Modifier.padding(start = 8.dp))
+//                    Text(text = item.first, modifier = Modifier.padding(start = 8.dp))
+                    // I made these a textfield object instead of normal text so that you can edit anything if you made a mistake
+                    TextField(
+                        value = item.first,
+                        onValueChange = { newText ->
+                            val index = items.indexOf(item)
+                            items[index] = item.copy(first = newText)
+                        },
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .width(200.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            cursorColor = Color.Black,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            containerColor = Color.Transparent)
+                    )
                     TextField(
                         value = item.third,
                         onValueChange = { newQuantity ->
@@ -109,7 +129,6 @@ fun ShoppingList() {
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .width(80.dp),
-                        singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             cursorColor = Color(0xFFbd300d),
                             focusedIndicatorColor = Color.Transparent,
